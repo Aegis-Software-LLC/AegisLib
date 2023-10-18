@@ -8,14 +8,14 @@ AegisLib.INFO    = 1
 AegisLib.WARNING = 2
 AegisLib.ERROR   = 3
 
-/**
- * Create a new AegisLib module.
- * @param moduleName  Name of module.
- * @param author      Name of author.
- * @param version     Module version.
- * @param initFn      Function to initialize the module.
- * @param dependson   Table of module dependencies in format { Name: string, Version: string }
- */
+--[[
+  Create a new AegisLib module.
+  @param moduleName  Name of module.
+  @param author      Name of author.
+  @param version     Module version.
+  @param initFn      Function to initialize the module.
+  @param dependson   Table of module dependencies in format { Name: string, Version: string }
+]]--
 function AegisLib.Module:New(moduleName, author, version, initFn, dependson)
     AegisLib.Log(1, "Loading module '%s' v%s made by %s...", moduleName, version, author);
 
@@ -57,11 +57,11 @@ function AegisLib.Module:New(moduleName, author, version, initFn, dependson)
     return Data;
 end
 
-/**
- * Print a formatted message to the console.
- * @param level    Logger level.
- * @param message  Message format (printf-style).
- */
+--[[
+  Print a formatted message to the console.
+  @param level    Logger level.
+  @param message  Message format (printf-style).
+]]--
 function AegisLib.Module:Log(level, message, ...)
     local Levels = {
         [AegisLib.DEBUG]   = "["..self.ModuleName.." - Debug] ",
@@ -74,11 +74,11 @@ function AegisLib.Module:Log(level, message, ...)
     MsgN();
 end
 
-/**
- * Display a message in a player's chat box.
- * @param ply      Player.
- * @param message  Message format (printf-style).
- */
+--[[
+  Display a message in a player's chat box.
+  @param ply      Player.
+  @param message  Message format (printf-style).
+]]--
 function AegisLib.Module:Message(ply, message, ...)
     print(self.ModuleName);
     message = Format(message, ...);
