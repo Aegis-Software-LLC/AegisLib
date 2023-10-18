@@ -2,12 +2,6 @@
 AegisLib.Module = {};
 AegisLib.Module.__index = AegisLib.Module;
 
--- Logger definitions
-AegisLib.DEBUG   = 0
-AegisLib.INFO    = 1
-AegisLib.WARNING = 2
-AegisLib.ERROR   = 3
-
 --[[
   Create a new AegisLib module.
   @param moduleName  Name of module.
@@ -49,9 +43,9 @@ function AegisLib.Module:New(moduleName, author, version, initFn, dependson)
         table.insert(AegisLib.Modules, Data);
     end
 
-    local succ, err = pcall(func, Data);
+    local succ, err = pcall(initFn, Data);
     if(!succ) then
-        AegisLib.Log(3, "Error loading module %s! Error: %s", moduleName, err);
+        AegisLib.Log(3, "Error loading module %s! Error: %s", moduleName, debug.traceback(err));
     end
 
     return Data;
@@ -72,6 +66,14 @@ function AegisLib.Module:Log(level, message, ...)
 
     MsgC(AegisLib.LogColors[level], Levels[level], Color(255, 255, 255), Format(message, ...));
     MsgN();
+end
+
+--[[
+  Print a formatted info message to the console.
+  @param message  Message format (printf-style).
+]]--
+function AegisLib.Module:Info(message, ...)
+    self:Log(AegisLib.INFO, message, ...)
 end
 
 --[[

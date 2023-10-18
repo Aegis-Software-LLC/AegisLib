@@ -1,4 +1,8 @@
--- Made for bald gaming.
+-- Logger levels.
+AegisLib.DEBUG   = 0
+AegisLib.INFO    = 1
+AegisLib.WARNING = 2
+AegisLib.ERROR   = 3
 
 AegisLib.LogColors = {
     -- Debug/Info
