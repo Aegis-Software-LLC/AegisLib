@@ -2,7 +2,7 @@
 AegisLib.Module = {};
 AegisLib.Module.__index = AegisLib.Module;
 
-function AegisLib.Module:new(moduleName, author, version, dependson)
+function AegisLib.Module:new(moduleName, author, version, func, dependson)
     AegisLib.Log(1, "Loading module '%s' v%s made by %s...", moduleName, version, author);
 
     if(!dependson) then dependson = {} end;
@@ -32,7 +32,12 @@ function AegisLib.Module:new(moduleName, author, version, dependson)
     setmetatable(Data, AegisLib.Module);
 
     if(SERVER) then
-        table.insert(AegisLib.Modules, self);
+        table.insert(AegisLib.Modules, Data);
+    end
+
+    local succ, err = pcall(func);
+    if(!succ) then
+        AegisLib.Log(3, "Error loading module %s! Error: %s", moduleName, err);
     end
 
     return Data;
