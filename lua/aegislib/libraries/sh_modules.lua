@@ -35,7 +35,7 @@ function AegisLib.Module:new(moduleName, author, version, func, dependson)
         table.insert(AegisLib.Modules, Data);
     end
 
-    local succ, err = pcall(func);
+    local succ, err = pcall(func, Data);
     if(!succ) then
         AegisLib.Log(3, "Error loading module %s! Error: %s", moduleName, err);
     end
