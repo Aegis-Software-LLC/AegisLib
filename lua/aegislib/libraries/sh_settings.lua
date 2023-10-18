@@ -1,0 +1,1 @@
+setmetatable(AegisLib.MySettings, {__call = AegisLib.MySettings.Load})
