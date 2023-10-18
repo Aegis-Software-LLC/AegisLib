@@ -2,7 +2,21 @@
 AegisLib.Module = {};
 AegisLib.Module.__index = AegisLib.Module;
 
-function AegisLib.Module:new(moduleName, author, version, func, dependson)
+-- Logger definitions
+AegisLib.DEBUG   = 0
+AegisLib.INFO    = 1
+AegisLib.WARNING = 2
+AegisLib.ERROR   = 3
+
+/**
+ * Create a new AegisLib module.
+ * @param moduleName  Name of module.
+ * @param author      Name of author.
+ * @param version     Module version.
+ * @param initFn      Function to initialize the module.
+ * @param dependson   Table of module dependencies in format { Name: string, Version: string }
+ */
+function AegisLib.Module:New(moduleName, author, version, initFn, dependson)
     AegisLib.Log(1, "Loading module '%s' v%s made by %s...", moduleName, version, author);
 
     if(!dependson) then dependson = {} end;
@@ -43,17 +57,28 @@ function AegisLib.Module:new(moduleName, author, version, func, dependson)
     return Data;
 end
 
+/**
+ * Print a formatted message to the console.
+ * @param level    Logger level.
+ * @param message  Message format (printf-style).
+ */
 function AegisLib.Module:Log(level, message, ...)
     local Levels = {
-        [1] = "["..self.ModuleName.." - Info] ",
-        [2] = "["..self.ModuleName.." - Warning] ",
-        [3] = "["..self.ModuleName.." - Error] "
+        [AegisLib.DEBUG]   = "["..self.ModuleName.." - Debug] ",
+        [AegisLib.INFO]    = "["..self.ModuleName.." - Info] ",
+        [AegisLib.WARNING] = "["..self.ModuleName.." - Warning] ",
+        [AegisLib.ERROR]   = "["..self.ModuleName.." - Error] "
     }
 
     MsgC(AegisLib.LogColors[level], Levels[level], Color(255, 255, 255), Format(message, ...));
     MsgN();
 end
 
+/**
+ * Display a message in a player's chat box.
+ * @param ply      Player.
+ * @param message  Message format (printf-style).
+ */
 function AegisLib.Module:Message(ply, message, ...)
     print(self.ModuleName);
     message = Format(message, ...);
@@ -67,6 +92,9 @@ function AegisLib.Module:Message(ply, message, ...)
     end
 end
 
-setmetatable(AegisLib.Module, {__call = AegisLib.Module.new});
+setmetatable(AegisLib.Module, {
+    -- AegisLib.Module(...) -> AegisLib.Module.New(AegisLib.Module, ...)
+    __call = AegisLib.Module.New
+});
 
-AegisLib.Log(1, "Modules Library loaded!");
+AegisLib.Log(AegisLib.INFO, "Modules Library loaded!");
