@@ -55,5 +55,4 @@ function AegisLib.FindPlayer(input)
     return Found[1];
 end
 
-
 hook.Call("AegisLib.Initialized"); -- done balding
