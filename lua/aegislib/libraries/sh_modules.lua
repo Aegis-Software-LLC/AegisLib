@@ -40,7 +40,7 @@ function AegisLib.Module:New(moduleName, author, version, initFn, dependson)
     setmetatable(Data, AegisLib.Module);
 
     if(SERVER) then
-        table.insert(AegisLib.Modules, Data);
+        AegisLib.Modules[moduleName] = Data
     end
 
     local succ, err = pcall(initFn, Data);
@@ -92,6 +92,15 @@ function AegisLib.Module:Message(ply, message, ...)
     else
         chat.AddText(Color(0, 100, 255), "["..self.ModuleName.."] ", Color(255, 255, 255), message);
     end
+end
+
+--[[
+  Get the specified module's table.
+  @param name  Module name.
+  @return Module table or nil.
+]]--
+function AegisLib.GetModule(name)
+    return AegisLib.Modules[name]
 end
 
 setmetatable(AegisLib.Module, {
