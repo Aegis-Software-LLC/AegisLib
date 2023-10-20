@@ -15,6 +15,10 @@ end
 function AegisLib.New( name, ... )
     local class = AegisLib.Classes[ name ]
 
+    if ( !class ) then
+        error("undefined class '" .. name .. "'")
+    end
+
     -- Resolve and cache super class if needed.
     if ( !class.SUPER ) then
         class.SUPER = AegisLib.Classes[ class.SUPER_NAME ]
