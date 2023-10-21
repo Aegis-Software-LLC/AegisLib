@@ -34,7 +34,8 @@ AegisLib.Libraries = {
     ["sv_database.lua"] = nil,
     ["sh_modules.lua"] = nil,
     ["sh_settings.lua"] = nil,
-    ["sh_atest.lua"] = "sh_class.lua"
+    ["sh_atest.lua"] = "sh_class.lua",
+    ["sh_aegisui.lua"] = "sh_class.lua"
 }
 
 local loadedLibs = {};
