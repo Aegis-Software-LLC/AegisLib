@@ -7,7 +7,90 @@ if ( SERVER ) then
     resource.AddFile( 'materials/icon/aegis/minus.png' )
     resource.AddFile( 'materials/icon/aegis/box.png' )
     resource.AddFile( 'materials/icon/aegis/x.png' )
-    
+
+    util.AddNetworkString( 'AegisLib_ShowNotif' )
+    util.AddNetworkString( 'AegisLib_NotifReply' )
+
+    --[[
+      Display a notification window for a client.
+      @param ply       Player to show notification to.
+      @param notif     Notification table.
+    ]]--
+    function AegisLib.ShowNotification( ply, notif )
+        if ( !IsValid(ply) ) then error( 'invalid player' ) end
+
+        -- Generate a random id.
+        local id = math.random( 0, 65535 )
+        
+        -- Build the actual notification table.
+        local time = CurTime()
+        local expires = time + 1
+        local toSend = { 
+            id         = id,
+            title      = notif.title   or 'Alert',
+            content    = notif.content or '',
+            type       = notif.type    or AegisLib.NOTIFY_OK,
+            customText = notif.customText,
+            expires    = expires
+        }
+        notif.id      = id
+        notif.expires = expires
+
+        -- Associate notification with the player.
+        if ( !ply.Notifications ) then ply.Notifications = { } end
+        local plyNotifs = ply.Notifications
+        plyNotifs[ id ] = notif
+
+        -- Check if there are any expired notifications to clean up.
+        for k, v in pairs ( plyNotifs ) do
+            if ( time >= v.expires ) then
+                if ( v.onExpire ) then
+                    v.onExpire( k )
+                end
+                plyNotifs[ k ] = nil
+            end
+        end
+
+        -- Send it over the interbutts.
+        net.Start( 'AegisLib_ShowNotif' )
+            net.WriteTable( toSend )
+        net.Send( ply )
+    end
+
+    net.Receive( 'AegisLib_NotifReply', function( len, ply )
+        local id = net.ReadUInt( 16 )
+        local reply = net.ReadString()
+
+        -- Is this even a real player?
+        if ( !IsValid( ply ) || !ply.Notifications ) then return end
+
+        -- Is there an outbound notification to this player?
+        local notif = ply.Notifications[ id ]
+        if ( !notif ) then return end
+
+        -- Run the callback if there is one.
+        if ( notif.onReply ) then
+            notif.onReply( id, reply )
+        end
+
+        -- Remove notification entry.
+        ply.Notifications[ id ] = nil
+    end )
+
+    concommand.Add( 'ag_alert_sv', function( ply, cmd, args )
+        AegisLib.ShowNotification( ply, {
+            title = 'Alert',
+            content = args[ 1 ],
+            type = AegisLib.NOTIFY_OK,
+            onReply = function( id, reply )
+                AegisLib.Log( 1, 'Notification reply %d recieved: %s', id, reply )
+            end,
+            onExpire = function( id )
+                AegisLib.Log( 1, 'Notification %d expired.', id )
+            end
+        } )
+    end )
+
     -- Don't run the rest of the file.
     return
 end
@@ -77,6 +160,17 @@ function AegisLib.Notification( title, content, ntype, callback, text )
     notif:Center()
     notif:MakePopup()
 end
+
+net.Receive( 'AegisLib_ShowNotif', function( len )
+    local notif = net.ReadTable()
+
+    AegisLib.Notification( notif.title, notif.content, notif.type, function( self, choice )
+        net.Start( 'AegisLib_NotifReply' )
+            net.WriteUInt( notif.id, 16 )
+            net.WriteString( choice )
+        net.SendToServer()
+    end )
+end )
 
 concommand.Add( 'ag_alert', function( ply, cmd, args )
     AegisLib.Notification( "Alert", args[1], AegisLib.NOTIFY_YESNO, function( self, choice )

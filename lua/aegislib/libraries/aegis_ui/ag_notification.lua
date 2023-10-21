@@ -104,8 +104,15 @@ function PANEL:SetContent( content )
     local w = math.max( self.MINIMUM_WIDTH, ScrW() * 0.2 ) 
 
     local chars = string.len( content )
-    local charsPerLine = math.ceil( (w - 16) / 10 )
+    local charsPerLine = math.ceil( (w - 16) / 11 )
     local lines = math.ceil( string.len( content ) / charsPerLine )
+
+    -- Count newlines.
+    for i = 0, chars do
+        if ( string.byte( content, i ) == 0x0A ) then
+            lines = lines + 1
+        end
+    end
 
     if ( lines == 1 ) then
         self.labelContent:SetWrap( false )
