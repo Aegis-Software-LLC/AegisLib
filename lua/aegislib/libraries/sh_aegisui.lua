@@ -3,6 +3,11 @@ if ( SERVER ) then
     AddCSLuaFile( 'aegis_ui/ag_frame.lua' )
     AddCSLuaFile( 'aegis_ui/ag_notification.lua' )
 
+    resource.AddFile( 'materials/icon/aegis/asoft32.png' )
+    resource.AddFile( 'materials/icon/aegis/minus.png' )
+    resource.AddFile( 'materials/icon/aegis/box.png' )
+    resource.AddFile( 'materials/icon/aegis/x.png' )
+    
     -- Don't run the rest of the file.
     return
 end
