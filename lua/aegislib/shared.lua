@@ -42,6 +42,10 @@ function AegisLib.Log(level, message, ...)
     end
 end
 
+function AegisLib.Info(message, ...)
+    AegisLib.Log( AegisLib.INFO, message, ... )
+end
+
 function AegisLib.Message(ply, message, ...)
     message = Format(message, ...);
 
